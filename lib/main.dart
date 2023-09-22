@@ -2,7 +2,6 @@ import 'package:dio/dio.dart';
 import 'package:testsuiteapi/api.dart';
 
 void main() async {
-  // Tạo đối tượng `Dio`
   final dio = Dio();
 
   // Gọi API để lấy access token
@@ -17,12 +16,12 @@ void main() async {
     },
   );
 
-  // Xử lý kết quả của tương lai
+  // =))))))))))))))))))))))))
   request.then((response) {
-    // Lấy access token từ phản hồi API
+    // Lấy access token từ  API
     final token = response.data['access_token'];
 
-    // In access token ra màn hình
+    // In access token
     print(token);
   }).catchError((error) {
     // Xử lý lỗi
