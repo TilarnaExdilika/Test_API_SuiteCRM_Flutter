@@ -2,15 +2,13 @@ import 'package:dio/dio.dart';
 import 'package:testsuiteapi/api.dart';
 
 void main() async {
-  // Tạo đối tượng `Dio`
   final dio = Dio();
 
-  // Lấy access token
   final accessToken = await getAccessToken(dio);
 
   // Gọi API để lấy data
   final request = dio.get(
-    'https://dev.longphatcrm.vn/Api/index.php/V8/module/Leads',
+    urlApi,
     options: Options(
       headers: {
         'Authorization': 'Bearer $accessToken',
@@ -18,9 +16,9 @@ void main() async {
     ),
   );
 
-  // Xử lý kết quả của tương lai
+  // Xử lý kq
   request.then((response) {
-    // Lấy data từ phản hồi API
+    // Lấy data từ API
     final data = response.data;
 
     // In data ra màn hình
@@ -44,16 +42,16 @@ Future<String> getAccessToken(Dio dio) async {
     },
   );
 
-  // Thực hiện yêu cầu API
+  // Thực hiện API request
   final response = await request;
 
-  // Xử lý phản hồi API
+  // Xử lý
   if (response.statusCode == 200) {
-    // Lấy access token từ phản hồi API
+    // Lấy access token từ API
     final token = response.data['access_token'];
     return token;
   } else {
-    // Tạo ngoại lệ nếu yêu cầu API không thành công
+    // nếu yêu cầu API không thành công
     throw Exception('Failed to get access token: ${response.statusCode}');
   }
 }
