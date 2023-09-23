@@ -87,7 +87,8 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Khách hàng tiềm năng'),
+        title: const Text('KH tiềm năng'),
+        backgroundColor: Colors.deepPurple,
       ),
       body: ListView.builder(
         itemCount: leadsData.length,
@@ -95,9 +96,16 @@ class _MyHomePageState extends State<MyHomePage> {
           final lead = leadsData[index];
           return Card(
             child: ListTile(
-              leading: const Icon(Icons.person),
+              leading: const Icon(Icons.person, color: Colors.deepPurpleAccent),
               title: Text(lead['attributes']['full_name']),
               subtitle: Text(lead['attributes']['phone_mobile']),
+              // Thêm nút để xem thêm thông tin về lead
+              trailing: IconButton(
+                icon: const Icon(Icons.info, color: Colors.deepPurpleAccent),
+                onPressed: () {
+                  // Mở màn hình mới để xem thêm thông tin về lead
+                },
+              ),
             ),
           );
         },
