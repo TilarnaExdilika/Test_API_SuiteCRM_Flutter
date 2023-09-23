@@ -1,4 +1,4 @@
-const String urlApi =
+const String urlLeads =
     'https://dev.longphatcrm.vn/Api/index.php/V8/module/Leads';
 const String urlToken = 'https://dev.longphatcrm.vn/Api/index.php/access_token';
 const String grantType = 'password';

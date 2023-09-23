@@ -8,7 +8,7 @@ void main() async {
 
   // Gọi API để lấy data
   final request = dio.get(
-    urlApi,
+    urlLeads,
     options: Options(
       headers: {
         'Authorization': 'Bearer $accessToken',
@@ -21,7 +21,7 @@ void main() async {
     // Lấy data từ API
     final data = response.data;
 
-    // In data ra màn hình
+    // In data ra terminal
     print(data);
   }).catchError((error) {
     // Xử lý lỗi
