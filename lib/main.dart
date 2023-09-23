@@ -87,16 +87,18 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('API Data'),
+        title: const Text('Khách hàng tiềm năng'),
       ),
       body: ListView.builder(
         itemCount: leadsData.length,
         itemBuilder: (context, index) {
           final lead = leadsData[index];
-          return ListTile(
-            title: Text(lead['attributes']['full_name']),
-            subtitle: Text(lead['attributes']['email']),
-            // Thêm các trường dữ liệu khác của lead ở đây
+          return Card(
+            child: ListTile(
+              leading: const Icon(Icons.person),
+              title: Text(lead['attributes']['full_name']),
+              subtitle: Text(lead['attributes']['phone_mobile']),
+            ),
           );
         },
       ),
