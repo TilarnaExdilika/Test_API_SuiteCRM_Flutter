@@ -31,6 +31,8 @@ class LeadsPage extends StatefulWidget {
 class _LeadsPageState extends State<LeadsPage> {
   List<Map<String, dynamic>> leadsData = [];
   late String accessToken;
+  String searchQuery = ""; // Biến lưu trữ dữ liệu tìm kiếm
+  List<Map<String, dynamic>> searchResults = []; // Danh sách kết quả tìm kiếm
 
   @override
   void initState() {
@@ -86,6 +88,22 @@ class _LeadsPageState extends State<LeadsPage> {
     }
   }
 
+// Hàm thực hiện tìm kiếm
+  void _performSearch() {
+    setState(() {
+      if (searchQuery.isEmpty) {
+        searchResults = [];
+      } else {
+        searchResults = leadsData.where((lead) {
+          final phoneMobile =
+              lead['attributes']['phone_mobile'].toString().toLowerCase();
+          final query = searchQuery.toLowerCase();
+          return phoneMobile.contains(query);
+        }).toList();
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -104,79 +122,106 @@ class _LeadsPageState extends State<LeadsPage> {
         title: const Text('KH tiềm năng'),
         backgroundColor: Colors.deepPurple,
       ),
-      body: ListView.builder(
-        itemCount: leadsData.length,
-        itemBuilder: (context, index) {
-          final lead = leadsData[index];
-          return Card(
-            child: ListTile(
-              leading: const Icon(Icons.person, color: Colors.deepPurpleAccent),
-              title: Text(lead['attributes']['full_name']),
-              subtitle: Text(lead['attributes']['phone_mobile']),
-              trailing: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  IconButton(
-                    icon:
-                        const Icon(Icons.info, color: Colors.deepPurpleAccent),
-                    onPressed: () {
-                      openLeadDetailsScreen(lead);
-                    },
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.delete, color: Colors.red),
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder: (context) => AlertDialog(
-                          title: const Text('Xóa khách hàng tiềm năng'),
-                          content: const Text(
-                              'Bạn có chắc chắn muốn xóa khách hàng tiềm năng này không?'),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.pop(context),
-                              child: const Text('Không'),
-                            ),
-                            TextButton(
-                              onPressed: () async {
-                                final leadId = lead['id'] as String;
-                                final client = Dio();
-                                final response = await client.delete(
-                                  'https://dev.longphatcrm.vn/Api/index.php/V8/module/Leads/$leadId',
-                                  options: Options(
-                                    headers: {
-                                      'Authorization': 'Bearer $accessToken',
-                                    },
-                                  ),
-                                );
-
-                                if (response.statusCode == 200) {
-                                  fetchData();
-                                } else {
-                                  // ignore: use_build_context_synchronously
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text(
-                                          'Xóa không thành công. Vui lòng thử lại sau.'),
-                                    ),
-                                  );
-                                }
-
-                                // ignore: use_build_context_synchronously
-                                Navigator.pop(context);
-                              },
-                              child: const Text('Có'),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                  ),
-                ],
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: TextField(
+              onChanged: (value) {
+                setState(() {
+                  searchQuery = value;
+                });
+              },
+              decoration: InputDecoration(
+                labelText: 'Tìm kiếm theo số điện thoại',
+                prefixIcon: Icon(Icons.search),
+                border: OutlineInputBorder(),
               ),
             ),
-          );
-        },
+          ),
+          Expanded(
+            child: ListView.builder(
+              itemCount:
+                  searchQuery.isEmpty ? leadsData.length : searchResults.length,
+              itemBuilder: (context, index) {
+                final lead = searchQuery.isEmpty
+                    ? leadsData[index]
+                    : searchResults[index];
+                return Card(
+                  child: ListTile(
+                    leading: const Icon(Icons.person,
+                        color: Colors.deepPurpleAccent),
+                    title: Text(lead['attributes']['full_name']),
+                    subtitle: Text(lead['attributes']['phone_mobile']),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.info,
+                              color: Colors.deepPurpleAccent),
+                          onPressed: () {
+                            openLeadDetailsScreen(lead);
+                          },
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.delete, color: Colors.red),
+                          onPressed: () {
+                            showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                title: const Text('Xóa khách hàng tiềm năng'),
+                                content: const Text(
+                                    'Bạn có chắc chắn muốn xóa khách hàng tiềm năng này không?'),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(context),
+                                    child: const Text('Không'),
+                                  ),
+                                  TextButton(
+                                    onPressed: () async {
+                                      final leadId = lead['id'] as String;
+                                      final client = Dio();
+                                      final response = await client.delete(
+                                        'https://dev.longphatcrm.vn/Api/index.php/V8/module/Leads/$leadId',
+                                        options: Options(
+                                          headers: {
+                                            'Authorization':
+                                                'Bearer $accessToken',
+                                          },
+                                        ),
+                                      );
+
+                                      if (response.statusCode == 200) {
+                                        fetchData();
+                                      } else {
+                                        // ignore: use_build_context_synchronously
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          const SnackBar(
+                                            content: Text(
+                                                'Xóa không thành công. Vui lòng thử lại sau.'),
+                                          ),
+                                        );
+                                      }
+
+                                      // ignore: use_build_context_synchronously
+                                      Navigator.pop(context);
+                                    },
+                                    child: const Text('Có'),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
       ),
       endDrawer: Drawer(
         child: ListView(
@@ -224,7 +269,8 @@ class _LeadsPageState extends State<LeadsPage> {
               leading: const Icon(Icons.search),
               title: const Text('Search'),
               onTap: () {
-                // Handle Search
+                _performSearch(); // Thực hiện tìm kiếm
+                Navigator.pop(context);
               },
             ),
           ],
