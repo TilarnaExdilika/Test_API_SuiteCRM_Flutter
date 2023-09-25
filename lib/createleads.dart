@@ -6,6 +6,7 @@ class CreateLeadPage extends StatefulWidget {
   const CreateLeadPage({Key? key}) : super(key: key);
 
   @override
+  // ignore: library_private_types_in_public_api
   _CreateLeadPageState createState() => _CreateLeadPageState();
 }
 
@@ -113,6 +114,7 @@ class _CreateLeadPageState extends State<CreateLeadPage> {
                 // Kiểm tra kết quả của request
                 if (response.statusCode == 200) {
                   // Tạo lead thành công
+                  // ignore: use_build_context_synchronously
                   Navigator.pop(
                       context); // Đóng trang tạo lead và quay lại trang danh sách leads
                 } else {

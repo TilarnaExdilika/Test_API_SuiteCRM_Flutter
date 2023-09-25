@@ -24,6 +24,7 @@ class LeadsPage extends StatefulWidget {
   const LeadsPage({Key? key}) : super(key: key);
 
   @override
+  // ignore: library_private_types_in_public_api
   _LeadsPageState createState() => _LeadsPageState();
 }
 
@@ -60,6 +61,7 @@ class _LeadsPageState extends State<LeadsPage> {
         leadsData = List<Map<String, dynamic>>.from(response.data['data']);
       });
     }).catchError((error) {
+      // ignore: avoid_print
       print(error);
     });
   }
@@ -151,14 +153,16 @@ class _LeadsPageState extends State<LeadsPage> {
                                 if (response.statusCode == 200) {
                                   fetchData();
                                 } else {
+                                  // ignore: use_build_context_synchronously
                                   ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
+                                    const SnackBar(
                                       content: Text(
                                           'Xóa không thành công. Vui lòng thử lại sau.'),
                                     ),
                                   );
                                 }
 
+                                // ignore: use_build_context_synchronously
                                 Navigator.pop(context);
                               },
                               child: const Text('Có'),
@@ -197,7 +201,7 @@ class _LeadsPageState extends State<LeadsPage> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => CreateLeadPage(),
+                    builder: (context) => const CreateLeadPage(),
                   ),
                 );
               },
@@ -236,6 +240,7 @@ class LeadDetailsPage extends StatefulWidget {
   const LeadDetailsPage({Key? key, required this.lead}) : super(key: key);
 
   @override
+  // ignore: library_private_types_in_public_api
   _LeadDetailsPageState createState() => _LeadDetailsPageState();
 }
 
@@ -263,7 +268,7 @@ class _LeadDetailsPageState extends State<LeadDetailsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Chi tiết Lead'),
+        title: const Text('Chi tiết Lead'),
         backgroundColor: Colors.deepPurple,
       ),
       body: ListView(
@@ -271,20 +276,15 @@ class _LeadDetailsPageState extends State<LeadDetailsPage> {
           ListTile(
             title: TextField(
               controller: fullNameController,
-              decoration: InputDecoration(labelText: 'Họ và tên'),
+              decoration: const InputDecoration(labelText: 'Họ và tên'),
             ),
           ),
           ListTile(
             title: TextField(
               controller: phoneMobileController,
-              decoration: InputDecoration(labelText: 'Số điện thoại'),
+              decoration: const InputDecoration(labelText: 'Số điện thoại'),
             ),
           ),
-          // Add more lead details here as needed
-          // Example:
-          // ListTile(
-          //   title: Text('Email: ${widget.lead['attributes']['email']}'),
-          // ),
         ],
       ),
       floatingActionButton: FloatingActionButton(
@@ -300,7 +300,8 @@ class _LeadDetailsPageState extends State<LeadDetailsPage> {
           };
           Navigator.pop(context, updatedLead);
         },
-        child: Icon(Icons.save),
+        // ignore: sort_child_properties_last
+        child: const Icon(Icons.save),
         backgroundColor: Colors.deepPurple,
       ),
     );
