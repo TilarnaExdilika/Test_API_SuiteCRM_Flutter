@@ -133,9 +133,40 @@ class _LeadsPageState extends State<LeadsPage> {
                               child: const Text('Không'),
                             ),
                             TextButton(
-                              onPressed: () {
-                                // Xóa khách hàng tiềm năng
-                                // ...
+                              onPressed: () async {
+                                // Xác định id của khách hàng tiềm năng
+                                final leadId = lead[
+                                    'id']; // Thay lead['id'] bằng cách lấy id thực tế từ dữ liệu của bạn
+
+                                // Tạo client
+                                final client = Dio();
+
+                                // Gửi request DELETE lên API để xóa khách hàng tiềm năng
+                                final response = await client.delete(
+                                  'https://dev.longphatcrm.vn/Api/index.php/V8/moduleLeads/$leadId',
+                                  options: Options(
+                                    headers: {
+                                      'Authorization': 'Bearer $accessToken',
+                                    },
+                                  ),
+                                );
+
+                                // Kiểm tra kết quả của request
+                                if (response.statusCode == 200) {
+                                  // Xóa thành công, cập nhật danh sách leads
+                                  fetchData();
+                                } else {
+                                  // Xóa không thành công, hiển thị thông báo lỗi
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                          'Xóa không thành công. Vui lòng thử lại sau.'),
+                                    ),
+                                  );
+                                }
+
+                                // Đóng hộp thoại xác nhận
+                                Navigator.pop(context);
                               },
                               child: const Text('Có'),
                             ),
