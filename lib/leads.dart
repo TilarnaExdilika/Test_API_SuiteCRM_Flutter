@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
-import 'package:testsuiteapi/api.dart';
 import 'package:flutter/material.dart';
+import 'package:testsuiteapi/api.dart';
+import 'package:testsuiteapi/createleads.dart';
 import 'package:testsuiteapi/main.dart';
 
 void main() {
@@ -8,36 +9,34 @@ void main() {
 }
 
 class Leads extends StatelessWidget {
-  const Leads({super.key});
+  const Leads({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: MyHomePage(),
+      home: LeadsPage(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key});
+class LeadsPage extends StatefulWidget {
+  const LeadsPage({Key? key}) : super(key: key);
 
   @override
-  // ignore: library_private_types_in_public_api
-  _MyHomePageState createState() => _MyHomePageState();
+  _LeadsPageState createState() => _LeadsPageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  List<Map<String, dynamic>> leadsData = []; // Danh sách dữ liệu từ API
+class _LeadsPageState extends State<LeadsPage> {
+  List<Map<String, dynamic>> leadsData = [];
 
   @override
   void initState() {
     super.initState();
-    fetchData(); // Gọi hàm để lấy dữ liệu từ API khi màn hình được khởi tạo
+    fetchData();
   }
 
   Future<String> getAccessToken(Dio dio) async {
-    // Tạo đối tượng `DioRequest`
     final request = dio.post(
       urlToken,
       data: {
@@ -49,16 +48,12 @@ class _MyHomePageState extends State<MyHomePage> {
       },
     );
 
-    // Thực hiện API request
     final response = await request;
 
-    // Xử lý
     if (response.statusCode == 200) {
-      // Lấy access token từ API
       final token = response.data['access_token'];
       return token;
     } else {
-      // nếu yêu cầu API không thành công
       throw Exception('Failed to get access token: ${response.statusCode}');
     }
   }
@@ -112,19 +107,50 @@ class _MyHomePageState extends State<MyHomePage> {
               leading: const Icon(Icons.person, color: Colors.deepPurpleAccent),
               title: Text(lead['attributes']['full_name']),
               subtitle: Text(lead['attributes']['phone_mobile']),
-              // Thêm nút để xem thêm thông tin về lead
-              trailing: IconButton(
-                icon: const Icon(Icons.info, color: Colors.deepPurpleAccent),
-                onPressed: () {
-                  // Mở màn hình mới để xem thêm thông tin về lead
-                },
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  IconButton(
+                    icon:
+                        const Icon(Icons.info, color: Colors.deepPurpleAccent),
+                    onPressed: () {
+                      // Mở màn hình mới để xem thêm thông tin về lead
+                    },
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.delete, color: Colors.red),
+                    onPressed: () {
+                      // Hiển ra thông báo bạn có muốn xóa ?
+                      showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: const Text('Xóa khách hàng tiềm năng'),
+                          content: const Text(
+                              'Bạn có chắc chắn muốn xóa khách hàng tiềm năng này không?'),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context),
+                              child: const Text('Không'),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                // Xóa khách hàng tiềm năng
+                                // ...
+                              },
+                              child: const Text('Có'),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                ],
               ),
             ),
           );
         },
       ),
       endDrawer: Drawer(
-        // Tạo EndDrawer bên phải
         child: ListView(
           padding: EdgeInsets.zero,
           children: <Widget>[
@@ -144,7 +170,13 @@ class _MyHomePageState extends State<MyHomePage> {
               leading: const Icon(Icons.add),
               title: const Text('Create'),
               onTap: () {
-                // Xử lý khi người dùng chọn Create
+                // Điều hướng đến trang tạo lead khi ấn vào Create
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => CreateLeadPage(),
+                  ),
+                );
               },
             ),
             ListTile(
@@ -168,50 +200,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 // Xử lý khi người dùng chọn Search
               },
             ),
-            // Thêm các chức năng khác vào đây
           ],
         ),
-      ),
-    );
-  }
-
-  @override
-  Widget navi(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const MyApp(), // Trở về trang chính
-              ),
-            );
-          },
-        ),
-        title: const Text('KH tiềm năng'),
-        backgroundColor: Colors.deepPurple,
-      ),
-      body: ListView.builder(
-        itemCount: leadsData.length,
-        itemBuilder: (context, index) {
-          final lead = leadsData[index];
-          return Card(
-            child: ListTile(
-              leading: const Icon(Icons.person, color: Colors.deepPurpleAccent),
-              title: Text(lead['attributes']['full_name']),
-              subtitle: Text(lead['attributes']['phone_mobile']),
-              // Thêm nút để xem thêm thông tin về lead
-              trailing: IconButton(
-                icon: const Icon(Icons.info, color: Colors.deepPurpleAccent),
-                onPressed: () {
-                  // Mở màn hình mới để xem thêm thông tin về lead
-                },
-              ),
-            ),
-          );
-        },
       ),
     );
   }
